@@ -1,5 +1,5 @@
 import { Add, Remove } from "@material-ui/icons";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Announcement from "../Components/Announcement";
 import Footer from "../Components/Footer";
@@ -7,6 +7,10 @@ import Navbar from "../Components/Navbar";
 import Newslatter from "../Components/Newslatter";
 import { mobile } from "../responsive";
 
+import { useParams } from "react-router";
+import { publicRequest } from "../axios/RequstMethod";
+import { useSelector, useDispatch } from "react-redux";
+import { addProduct } from "../Store/reducers/cart.reducer/cartReducer";
 const Container = styled.div``;
 const Wrapper = styled.div`
   padding: 20px;
@@ -100,50 +104,75 @@ const Button = styled.button`
   }
 `;
 const Product = () => {
+  const { id } = useParams();
+  const [product, setProduct] = useState({});
+  const [qantity, setQantity] = useState(1);
+  const [size, setSize] = useState("");
+  const [color, setColor] = useState("");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const res = await publicRequest.get(`/products/find/${id}`);
+        setProduct(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getProduct();
+  }, [id]);
+
+  const handleAmount = (type) => {
+    if (type === "minus") {
+      qantity > 1 && setQantity(qantity - 1);
+    } else {
+      setQantity(qantity + 1);
+    }
+  };
+
+  const handleAddToCart = () => {
+    dispatch(addProduct({ ...product, qantity, size, color }));
+  };
   return (
     <Container>
       <Navbar />
       <Announcement />
       <Wrapper>
         <ImgContiner>
-          <Img src="https://i.ibb.co/S6qMxwr/jean.jpg" />
+          <Img src={product.img} />
         </ImgContiner>
         <InfoContainer>
-          <Title>Denim Jumpsuit</Title>
-          <Desc>
-            {" "}
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-            venenatis, dolor in finibus malesuada, lectus ipsum porta nunc, at
-            iaculis arcu nisi sed mauris. Nulla fermentum vestibulum ex, eget
-            tristique tortor pretium ut. Curabitur elit justo, consequat id
-            condimentum ac, volutpat ornare.
-          </Desc>
-          <Price>$ 20</Price>
+          <Title>{product.title}</Title>
+          <Desc>{product.desc}</Desc>
+          <Price>$ {product.price}</Price>
           <FilterContainer>
             <Filter>
               <FilterTitle>Color:</FilterTitle>
-              <FilterColor color={"black"} />
-              <FilterColor color={"darkblue"} />
-              <FilterColor color={"gray"} />
+              {product.color?.map((c, index) => (
+                <FilterColor
+                  key={index}
+                  color={c}
+                  onClick={(e) => setColor(c)}
+                />
+              ))}
             </Filter>
             <Filter>
               <FilterTitle>Size</FilterTitle>
-              <FilterSize>
-                <FilterSizeOption>Xs</FilterSizeOption>
-                <FilterSizeOption>S</FilterSizeOption>
-                <FilterSizeOption>M</FilterSizeOption>
-                <FilterSizeOption>L</FilterSizeOption>
-                <FilterSizeOption>XL</FilterSizeOption>
+              <FilterSize onChange={(e) => setSize(e.target.value)}>
+                {product.size?.map((size, index) => (
+                  <FilterSizeOption key={index}>{size}</FilterSizeOption>
+                ))}
               </FilterSize>
             </Filter>
           </FilterContainer>
           <AddContiner>
             <AmountContiner>
-              <Remove />
-              <Amount>1</Amount>
-              <Add />
+              <Remove onClick={() => handleAmount("minus")} />
+              <Amount>{qantity}</Amount>
+              <Add onClick={() => handleAmount("plus")} />
             </AmountContiner>
-            <Button>Add To Card</Button>
+            <Button onClick={handleAddToCart}>Add To Card</Button>
           </AddContiner>
         </InfoContainer>
       </Wrapper>
