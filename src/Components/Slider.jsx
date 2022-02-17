@@ -80,7 +80,6 @@ const Button = styled.button`
 
 const Slider = () => {
   const [sliderIndex, setSliderIndex] = useState(0);
-
   const handleArrow = (arrow) => {
     if (arrow === "left") {
       setSliderIndex(sliderIndex > 0 ? sliderIndex - 1 : 2);

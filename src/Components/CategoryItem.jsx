@@ -37,9 +37,9 @@ const Button = styled.button`
  cursor:pointer;
  font-weight:600;
 `;
-const CategoryItem = ({ item }) => {
+const CategoryItem = ({ item ,onClick}) => {
   return (
-    <Container>
+    <Container onClick={onClick}>
       <Img src={item.img} />
       <Info>
         <Title>{item.title}</Title>
