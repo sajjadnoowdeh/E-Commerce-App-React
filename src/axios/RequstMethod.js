@@ -7,7 +7,7 @@ const TOEKN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMDRiZjUyYjdlM2I3
 
 const userRequest = axios.create({
     baseURL:"http://localhost:5000/api/",
-    headers: `Bearer ${TOEKN}`
+    header: `Bearer ${TOEKN}`
 })
 
 
