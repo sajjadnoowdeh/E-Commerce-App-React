@@ -1,10 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import cartReducer from "./reducers/cart.reducer/cartReducer";
-
+import { persistedReducer } from "./reducers";
+import persistStore from "redux-persist/es/persistStore";
 const store =configureStore({
     reducer:{
-        cart:cartReducer
+       reducer:persistedReducer
     }
 })
 
 export default store
+export  const persistor = persistStore(store)
