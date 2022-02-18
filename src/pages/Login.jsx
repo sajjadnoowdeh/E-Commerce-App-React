@@ -1,7 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+import { publicRequest } from "../axios/RequstMethod";
 import { mobile } from "../responsive";
 
+import { useDispatch, useSelector } from "react-redux";
+import { LoginReq } from "../Store/callApi";
+import CircularProgress from "@material-ui/core/CircularProgress";
 const Container = styled.div`
   width: 100vw;
   height: 100vh;
@@ -20,7 +24,7 @@ const Wrapper = styled.div`
   width: 25%;
   padding: 20px;
   background-color: white;
-  ${mobile({width:"74%"})}
+  ${mobile({ width: "74%" })}
 `;
 const Title = styled.h1`
   font-size: 24px;
@@ -36,7 +40,9 @@ const Input = styled.input`
   margin: 10px 0;
   padding: 10px;
 `;
-
+const Error = styled.span`
+  color: red;
+`;
 const Button = styled.button`
   width: 40%;
   border: none;
@@ -44,6 +50,10 @@ const Button = styled.button`
   cursor: pointer;
   color: white;
   background-color: teal;
+  &:disabled {
+    cursor: not-allowed;
+    color: green;
+  }
 `;
 
 const Link = styled.a`
@@ -53,16 +63,38 @@ const Link = styled.a`
   cursor: pointer;
 `;
 const Login = () => {
+  const [user, setUser] = React.useState({});
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.reducer.user);
+  const handleUser = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    LoginReq(dispatch, user);
+  };
   return (
     <Container>
       <Wrapper>
         <Title>SIGN IN</Title>
         <Form>
-          <Input placeholder="name" />
-          <Input placeholder="lastnaame" />
-          <Button>CREATE</Button>
+          <Input name="username" onChange={handleUser} placeholder="name" />
+          <Input
+            name="password"
+            onChange={handleUser}
+            placeholder="lastnaame"
+          />
+          <Button onClick={(e) => handleLogin(e)}>
+            {loading ? (
+              <CircularProgress color="secondary" size={"15px"} />
+            ) : (
+              "SIGIN"
+            )}
+          </Button>
+          <Error>{error && "please again current user pass"}</Error>
           <Link>DO NOT YOU REMEMBER PASSWORD?</Link>
-          <Link>CREATE ACCOUNT</Link>
+          <Link>SIGN ACCOUNT</Link>
         </Form>
       </Wrapper>
     </Container>
